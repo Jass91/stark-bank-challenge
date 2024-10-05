@@ -42,7 +42,7 @@ namespace Stark.API
             else
             {
                 string errorResponse = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error creating invoices: {errorResponse}");
+                throw new Exception("Error creating invoices", new Exception(errorResponse));
             }
         }
     }

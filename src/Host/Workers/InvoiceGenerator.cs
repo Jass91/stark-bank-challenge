@@ -33,9 +33,7 @@ namespace Stark.Application
         {
             _logger.LogInformation("Invoice worker running.");
 
-            //_timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(_invoiceWorkerConfig.IntervalHours));
-
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(_invoiceWorkerConfig.IntervalHours));
 
             return Task.CompletedTask;
         }

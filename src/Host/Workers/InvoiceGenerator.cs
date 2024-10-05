@@ -4,7 +4,7 @@ using Stark.Model;
 
 namespace Stark.Application
 {
-    public class InvoiceGenerator : IHostedService, IDisposable
+    public class InvoiceGenerator : IHostedService
     {
         private Timer? _timer = null;
         private int executionCount = 0;
@@ -22,11 +22,6 @@ namespace Stark.Application
             _logger = logger;
             _invoiceWorkerConfig = config;
             _invoiceService = invoiceService;
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

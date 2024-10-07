@@ -31,9 +31,9 @@ namespace Stark.Workers
         {
             await base.StopAsync(cancellationToken);
 
-            _timer?.Dispose();
             _running = false;
-
+            _executionCount = 1;
+            _timer?.Dispose();
 
             _logger.LogInformation("Invoice Generator is stopped");
         }
@@ -73,7 +73,10 @@ namespace Stark.Workers
         private void CreateInvoices()
         {
             var rnd = new Random(DateTime.UtcNow.Second);
-            var idx = rnd.Next(0, 1);
+            
+            // 0 ou 1
+            var idx = rnd.Next(0, 2); 
+            
             var max = ((int[])[8, 12])[idx];
             var invoices = new List<StarkBank.Invoice>();
             foreach (var i in Enumerable.Range(1, max))

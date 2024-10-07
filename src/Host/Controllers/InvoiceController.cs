@@ -35,8 +35,8 @@ namespace Stark.Controllers
             return Ok(createdInvoices);
         }
 
-        [HttpPost("proccess")]
-        public ActionResult<Invoice> Proccess([FromBody] JsonElement evt)
+        [HttpPost("process")]
+        public ActionResult<Invoice> Process([FromBody] JsonElement evt)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace Stark.Controllers
                 {
                     if (invoiceLog.Type == "paid")
                     {
-                        var isSuccess = _invoiceService.Proccess(invoiceLog.Invoice);
+                        var isSuccess = _invoiceService.Process(invoiceLog.Invoice);
                         if (isSuccess)
                             return Ok();
                     }

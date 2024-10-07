@@ -30,7 +30,7 @@ namespace Stark.Application.Invoice
             e.tax ID: 20.018.183 / 0001 - 80
             f.account type: payment
         */
-        public bool Proccess(StarkBank.Invoice invoice)
+        public bool Process(StarkBank.Invoice invoice)
         {
             try
             {
@@ -66,6 +66,8 @@ namespace Stark.Application.Invoice
 
         private long CalculateNetAmount(StarkBank.Invoice invoice)
         {
+            var daysLate = Math.Max(0, (DateTime.UtcNow - invoice.Created.GetValueOrDefault()).Days);
+
             // Convertendo para decimal para maior precisão em cálculos financeiros
             decimal amount = invoice.Amount; // Valor total da fatura em centavos
 
@@ -92,13 +94,13 @@ namespace Stark.Application.Invoice
             // Se InterestAmount é zero e InterestPercent > 0, calcular os juros com base no percentual
             if (interestAmount == 0 && interestPercent > 0)
             {
-                interestAmount = Math.Round(amount * (interestPercent / 100), 0, MidpointRounding.AwayFromZero);
+                interestAmount = Math.Round(daysLate * amount * (interestPercent / 100), 0, MidpointRounding.AwayFromZero);
                 _logger.LogInformation("Interest Calculated: {InterestAmount} cents", interestAmount);
             }
 
             // Calculando o total das deduções
             decimal totalDeductions = fee + fineAmount + interestAmount;
-            _logger.LogInformation("Total Deductions (Fee: {Fee}, FineAmount: {FineAmount}, InterestAmount: {InterestAmount}): {TotalDeductions} cents", fee, fineAmount, interestAmount, totalDeductions);
+            _logger.LogInformation("Total Deductions (Fee: {Fee}, FineAmount: {FineAmount}, InterestAmount: {InterestAmount}), DaysLate: {DaysLate}, {TotalDeductions} cents", fee, fineAmount, interestAmount, daysLate, totalDeductions);
 
             // Calculando o montante líquido
             decimal netAmount = amount - totalDeductions;

@@ -1,4 +1,6 @@
-﻿namespace Stark
+﻿using Microsoft.AspNetCore.Hosting;
+
+namespace Stark
 {
     public class SwaggerHostFactory
     {
@@ -13,7 +15,7 @@
 
             app.UseSwagger();
             app.UseSwaggerUI();
-            
+
             return app;
         }
     }

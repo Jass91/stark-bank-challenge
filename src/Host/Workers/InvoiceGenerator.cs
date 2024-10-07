@@ -4,13 +4,16 @@ using Stark.Application.Invoice;
 
 namespace Stark.Workers
 {
-    public class InvoiceGenerator : BackgroundService
+    public class InvoiceGenerator : BackgroundService, IInvoiceGenerator
     {
-        private int executionCount = 1;
-        private readonly PeriodicTimer _timer;
+        private int _executionCount = 1;
+        private bool _running = false;
+        private PeriodicTimer? _timer;
         private readonly IInvoiceService _invoiceService;
         private readonly ILogger<InvoiceGenerator> _logger;
         private readonly InvoiceWorkerConfig _invoiceWorkerConfig;
+
+        public bool Running => _running;
 
         public InvoiceGenerator
         (
@@ -22,8 +25,6 @@ namespace Stark.Workers
             _logger = logger;
             _invoiceWorkerConfig = config;
             _invoiceService = invoiceService;
-
-            _timer = new PeriodicTimer(TimeSpan.FromHours(_invoiceWorkerConfig.IntervalHours));
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
@@ -31,35 +32,46 @@ namespace Stark.Workers
             await base.StopAsync(cancellationToken);
 
             _timer?.Dispose();
+            _running = false;
+
+
+            _logger.LogInformation("Invoice Generator is stopped");
+        }
+
+        public override async Task StartAsync(CancellationToken cancellationToken)
+        {
+            _running = true;
+            _executionCount = 1;
+            _timer = new PeriodicTimer(TimeSpan.FromHours(_invoiceWorkerConfig.IntervalHours));
+            
+            _logger.LogInformation("Invoice worker running.");
+
+            await base.StartAsync(cancellationToken);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Invoice worker running.");
-
             do
             {
                 // roda a cada 3 horas durante 24h, entao, precisa executar 8 vezes (8 * 3 = 24)
-                if (executionCount > 8)
+                if (_executionCount > 8)
                 {
                     _logger.LogInformation("24 hours cycle completed.");
                     break;
                 }
 
+                _logger.LogInformation("Creating Invoices for execution #{Execution}...", _executionCount);
+                
                 CreateInvoices();
 
-            } while (await _timer.WaitForNextTickAsync(stoppingToken));
+            } while (await _timer!.WaitForNextTickAsync(stoppingToken));
 
             await StopAsync(stoppingToken);
-
-            _logger.LogInformation("Invoice Generator is stopped");
         }
 
 
         private void CreateInvoices()
         {
-            _logger.LogInformation("Creating Invoices for execution #{Execution}...", executionCount);
-
             var rnd = new Random(DateTime.UtcNow.Second);
             var idx = rnd.Next(0, 1);
             var max = ((int[])[8, 12])[idx];
@@ -70,12 +82,12 @@ namespace Stark.Workers
             try
             {
                 var createdInvoices = _invoiceService.Create(invoices);
-                executionCount++;
+                _executionCount++;
                 // var count = Interlocked.Increment(ref executionCount);
             }
             catch (Exception ex)
             {
-                executionCount--;
+                _executionCount--;
 
                 _logger.LogError(ex, "Error trying to create invoices");
             }

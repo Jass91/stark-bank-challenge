@@ -2,6 +2,7 @@
 using Stark.Model.Config;
 using Stark.Workers;
 using Stark.Application.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Stark
 {
@@ -11,7 +12,7 @@ namespace Stark
         {
             services
                 .AddServices()
-                .AddHostedService(sp =>
+                .AddSingleton<IInvoiceGenerator>(sp =>
                 {
                     var config = sp.GetRequiredService<IConfiguration>();
                     var invoiceService = sp.GetRequiredService<IInvoiceService>();
@@ -21,6 +22,8 @@ namespace Stark
 
                     return new InvoiceGenerator(workerConfig, invoiceService, logger);
                 });
+
+            services.AddHostedService(sp => sp.GetRequiredService<IInvoiceGenerator>());
 
             return services;
         }

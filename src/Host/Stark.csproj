@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Model\Stark.Model\Stark.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="publish\" />
+  </ItemGroup>
+
 </Project>

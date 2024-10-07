@@ -1,0 +1,36 @@
+https://webhook.site/#!/view/b4c894da-d755-4b96-b8e5-cdaf97e33258/c384791b-f267-46bc-be2f-f0d1e2ff0d8b/1
+
+// payload:
+{
+    "invoices": [
+        {
+            "amount": 10000,
+            "due": "2024-10-05T02:59:00.000+00:00",
+            "fine": 2,
+            "interest": 1,
+            "descriptions": [
+                {
+                    "value": "",
+                    "key": "Procurando infos sobre qual endpoint cria o invoio"
+                },
+                {
+                    "value": "",
+                    "key": "ce"
+                }
+            ],
+            "expiration": 5097600,
+            "name": "Carrefake",
+            "taxId": "11.826.331/0001-00"
+        }
+    ]
+}
+
+// gerar chaves:
+// pk
+openssl ecparam -genkey -name secp256k1 -noout -out stark_challenge.pvk.pem
+
+// pub
+openssl ec -in stark_challenge.pvk.pem -pubout -out stark_challenge.pub.pem
+
+
+

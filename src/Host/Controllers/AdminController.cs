@@ -30,5 +30,16 @@ namespace Stark.Controllers
 
             return Ok("Worker is started");
         }
+
+        /// <summary>
+        /// Allows admin to start worker if it is stopped
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("worker/invoice/status")]
+        public OkObjectResult WorkerStatus(CancellationToken cancellationToken)
+        {
+            return Ok(_invoiceWorker.Running ? "Running" : "Stopped");
+        }
     }
 }

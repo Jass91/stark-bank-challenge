@@ -70,7 +70,7 @@ jobs:
       run: |
           az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_APIM_RESOURCEGROUP }} \
-            --settings STARK_BANK_PK="${{ secrets.STARKBANK_PRIVATE_KEY }}"
+            --settings STARKBANK_PRIVATE_KEY="${{ secrets.STARKBANK_PRIVATE_KEY }}"
     - name: Azure Login
       uses: azure/login@v1
       with:

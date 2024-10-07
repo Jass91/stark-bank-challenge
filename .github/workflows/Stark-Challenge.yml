@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - main
+    - develop
 env:
   AZURE_WEBAPP_NAME: Stark-Challenge
   AZURE_WEBAPP_PACKAGE_PATH: src/Host/publish

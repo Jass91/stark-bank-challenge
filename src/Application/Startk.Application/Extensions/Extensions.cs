@@ -17,19 +17,15 @@ namespace Stark.Application.Extensions
                 var config = sp.GetRequiredService<IConfiguration>();
                 var starkConfig = config.GetSection("StarkAPI").Get<StarkApiConfig>()!;
 
-                using(var fs = File.OpenRead(starkConfig.PrivateKeyFilePath))
-                using(var sr = new StreamReader(fs))
-                {
-                    var privateKeyContent = sr.ReadToEnd();
+                var privateKeyContent = config["STARKBANK_PRIVATE_KEY"];
 
-                    StarkBank.Project project = new StarkBank.Project(
+                StarkBank.Project project = new StarkBank.Project(
                         id: starkConfig.ProjectId,
                         privateKey: privateKeyContent,
                         environment: starkConfig.Environment
                     );
 
-                    return project;
-                }
+                return project;
             });
 
             return services;

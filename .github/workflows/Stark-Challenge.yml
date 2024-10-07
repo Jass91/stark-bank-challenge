@@ -2,7 +2,7 @@ name: Build and deploy .NET Core application to Web App Stark-Challenge with API
 on:
   push:
     branches:
-    - feat/invoices
+    - main
 env:
   AZURE_WEBAPP_NAME: Stark-Challenge
   AZURE_WEBAPP_PACKAGE_PATH: src/Host/publish
@@ -65,6 +65,11 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
         publish-profile: ${{ secrets.Stark_Challenge_A183 }}
+    - name: Set environment variable in Azure WebApp
+      run: |
+          az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_APIM_RESOURCEGROUP }} \
+            --settings STARK_BANK_PK="${{ secrets.STARKBANK_PRIVATE_KEY }}"
     - name: Azure Login
       uses: azure/login@v1
       with:

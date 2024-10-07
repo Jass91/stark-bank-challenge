@@ -3,6 +3,9 @@ using Stark;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Configuration.AddUserSecrets<Program>();
+
+builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddControllers();
 
@@ -13,13 +16,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     // sei que para prod devemos ser mais restritos
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
+    options.AddPolicy("AllowAll",builder =>
+    {
+        builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddStarkDependencies();

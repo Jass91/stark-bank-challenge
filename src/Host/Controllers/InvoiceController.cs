@@ -50,8 +50,7 @@ namespace Stark.Controllers
 
                 if (parsedEvent.Subscription == "invoice" && parsedEvent.Log is Invoice.Log invoiceLog)
                 {
-                    // deveria ser credited ou paid?
-                    if (invoiceLog.Type == "credited")
+                    if (invoiceLog.Type == "paid")
                     {
                         var isSuccess = _invoiceService.Proccess(invoiceLog.Invoice);
                         if (isSuccess)

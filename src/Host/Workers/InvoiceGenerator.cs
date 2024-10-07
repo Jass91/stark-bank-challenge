@@ -33,6 +33,29 @@ namespace Stark.Workers
             _timer?.Dispose();
         }
 
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("Invoice worker running.");
+
+            do
+            {
+                // roda a cada 3 horas durante 24h, entao, precisa executar 8 vezes (8 * 3 = 24)
+                if (executionCount > 8)
+                {
+                    _logger.LogInformation("24 hours cycle completed.");
+                    break;
+                }
+
+                CreateInvoices();
+
+            } while (await _timer.WaitForNextTickAsync(stoppingToken));
+
+            await StopAsync(stoppingToken);
+
+            _logger.LogInformation("Invoice Generator is stopped");
+        }
+
+
         private void CreateInvoices()
         {
             _logger.LogInformation("Creating Invoices for execution #{Execution}...", executionCount);
@@ -79,28 +102,6 @@ namespace Stark.Workers
                 //    }
                 //}
             );
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            _logger.LogInformation("Invoice worker running.");
-
-            do
-            {
-                // roda a cada 3 horas durante 24h, entao, precisa executar 8 vezes (8 * 3 = 24)
-                if (executionCount > 8)
-                {
-                    _logger.LogInformation("24 hours cycle completed.");
-                    break;
-                }
-
-                CreateInvoices();
-
-            } while (await _timer.WaitForNextTickAsync(stoppingToken));
-
-            await StopAsync(stoppingToken);
-
-            _logger.LogInformation("Invoice Generator is stopped");
         }
     }
 }

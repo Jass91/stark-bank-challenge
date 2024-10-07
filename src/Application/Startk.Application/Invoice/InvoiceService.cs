@@ -44,7 +44,7 @@ namespace Stark.Application.Invoice
                 // Calcular o montante líquido
                 var netAmount = CalculateNetAmount(invoice);
 
-                _logger.LogInformation($"Montante líquido calculado: {netAmount} centavos");
+                _logger.LogInformation($"Net amount: {netAmount} cents");
 
                 // Realizar a transferência
                 var transfer = StarkBank.Transfer.Create
@@ -54,6 +54,8 @@ namespace Stark.Application.Invoice
                         new StarkBank.Transfer(netAmount, name, taxId, bankCode, branchCode, accountNumber, accountType)
                     ]
                 );
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -83,27 +85,27 @@ namespace Stark.Application.Invoice
             // Se FineAmount é zero e FinePercent > 0, calcular a multa com base no percentual
             if (fineAmount == 0 && finePercent > 0)
             {
-                fineAmount = Math.Round(amount * (finePercent / 100), 0, MidpointRounding.AwayFromZero);
-                _logger.LogInformation($"Calculada multa: {fineAmount} centavos");
+                fineAmount = Math.Round(amount * (finePercent / 100), 4);
+                _logger.LogInformation("Fine amount calculated: {FineAmount} cents", fineAmount);
             }
 
             // Se InterestAmount é zero e InterestPercent > 0, calcular os juros com base no percentual
             if (interestAmount == 0 && interestPercent > 0)
             {
                 interestAmount = Math.Round(amount * (interestPercent / 100), 0, MidpointRounding.AwayFromZero);
-                _logger.LogInformation($"Calculados juros: {interestAmount} centavos");
+                _logger.LogInformation("Interest Calculated: {InterestAmount} cents", interestAmount);
             }
 
             // Calculando o total das deduções
             decimal totalDeductions = fee + fineAmount + interestAmount;
-            _logger.LogInformation($"Taxas deduzidas (Fee: {fee}, FineAmount: {fineAmount}, InterestAmount: {interestAmount}): {totalDeductions} centavos");
+            _logger.LogInformation("Total Deductions (Fee: {Fee}, FineAmount: {FineAmount}, InterestAmount: {InterestAmount}): {TotalDeductions} cents", fee, fineAmount, interestAmount, totalDeductions);
 
             // Calculando o montante líquido
             decimal netAmount = amount - totalDeductions;
-            _logger.LogInformation($"Montante líquido: {netAmount} centavos");
+            _logger.LogInformation("Net Amount: {NetAmount} cents", netAmount);
 
             // Arredondando para garantir que esteja em centavos (sem casas decimais)
-            return (long)Math.Round(netAmount, 0, MidpointRounding.AwayFromZero);
+            return (long)Math.Round(netAmount, 4);
         }
 
     }

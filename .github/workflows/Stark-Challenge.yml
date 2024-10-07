@@ -4,6 +4,7 @@ on:
     branches:
     - main
     - develop
+  #workflow_dispatch: # Permite iniciar manualmente o workflow
 env:
   AZURE_WEBAPP_NAME: Stark-Challenge
   AZURE_WEBAPP_PACKAGE_PATH: src/Host/publish
@@ -20,6 +21,9 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: src/Host
+  
+  # permite escolher o valor com base na branch
+  ASPNETCORE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || github.ref == 'refs/heads/develop' && 'Development' || 'Unknown' }} 
 jobs:
   build:
     runs-on: ubuntu-latest

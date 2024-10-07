@@ -32,8 +32,9 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-if (app.Environment.IsEnvironment("Production"))
-    app.UseHttpsRedirection();
+// em prod devemos ter https
+//if (app.Environment.IsEnvironment("Production"))
+//    app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 

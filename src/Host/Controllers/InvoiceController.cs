@@ -46,10 +46,11 @@ namespace Stark.Controllers
 
                 if (parsedEvent.Subscription == "invoice" && parsedEvent.Log is Invoice.Log invoiceLog)
                 {
-                    _logger.LogInformation("Start process paid invoice {ID}", invoiceLog.Invoice.ID);
 
                     if (invoiceLog.Type == "paid")
                     {
+                        _logger.LogInformation("Start process paid invoice {ID}", invoiceLog.Invoice.ID);
+
                         var isSuccess = _invoiceService.Process(invoiceLog.Invoice);
                         if (isSuccess)
                             _logger.LogInformation("Invoice {ID} proccessed", invoiceLog.Invoice.ID);

@@ -4,7 +4,7 @@ on:
     branches:
     - main
     - develop
-  #workflow_dispatch: # Permite iniciar manualmente o workflow
+  workflow_dispatch: # Permite iniciar manualmente o workflow
 env:
   AZURE_WEBAPP_NAME: Stark-Challenge
   AZURE_WEBAPP_PACKAGE_PATH: src/Host/publish

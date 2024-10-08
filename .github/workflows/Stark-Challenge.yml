@@ -5,6 +5,11 @@ on:
     - main
     - develop
   workflow_dispatch: # Permite iniciar manualmente o workflow
+      inputs:
+          environment:
+            description: 'Environment to deploy to'
+            required: true
+            default: 'Development'
 env:
   AZURE_WEBAPP_NAME: Stark-Challenge
   AZURE_WEBAPP_PACKAGE_PATH: src/Host/publish
@@ -21,9 +26,9 @@ env:
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: src/Host
-  
-  # permite escolher o valor com base na branch
-  ASPNETCORE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || github.ref == 'refs/heads/develop' && 'Development' || 'Unknown' }} 
+
+  # permite escolher o valor com base na branch ou input
+  ASPNETCORE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || github.event.inputs.environment }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -83,6 +88,11 @@ jobs:
           az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} \
             --resource-group ${{ env.AZURE_APIM_RESOURCEGROUP }} \
             --settings STARKBANK_PRIVATE_KEY="${{ secrets.STARKBANK_PRIVATE_KEY }}"
+    - name: Set ASPNETCORE_ENVIRONMENT in Azure WebApp
+      run: |
+          az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_APIM_RESOURCEGROUP }} \
+            --settings ASPNETCORE_ENVIRONMENT="${{ env.ASPNETCORE_ENVIRONMENT }}"
     - name: logout
       run: >
         az logout

@@ -47,9 +47,8 @@ namespace Stark.Workers
             
             SetCurrentExecution(0);
             
-            //_timer = new PeriodicTimer(TimeSpan.FromHours(_invoiceWorkerConfig.IntervalHours));
-            _timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
-
+            _timer = new PeriodicTimer(TimeSpan.FromHours(_invoiceWorkerConfig.IntervalHours));
+            
             _logger.LogInformation("Invoice worker running.");
 
             await base.StartAsync(cancellationToken);

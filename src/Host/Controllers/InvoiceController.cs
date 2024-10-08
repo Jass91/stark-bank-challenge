@@ -26,15 +26,6 @@ namespace Stark.Controllers
             _invoiceService = invoiceService;
         }
 
-        // TODO: remover ou deixar pra teste
-        [HttpPost]
-        public ActionResult<IEnumerable<Invoice>> Create([FromBody] List<StarkBank.Invoice> invoices)
-        {
-            var createdInvoices = _invoiceService.Create(invoices);
-
-            return Ok(createdInvoices);
-        }
-
         [HttpPost("process")]
         public ActionResult<Invoice> Process([FromBody] JsonElement evt)
         {

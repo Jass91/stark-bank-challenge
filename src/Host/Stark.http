@@ -1,0 +1,6 @@
+@Stark_HostAddress = http://localhost:5022
+
+POST {{Stark_HostAddress}}/invoice/
+Accept: application/json
+
+###

@@ -3,6 +3,7 @@ using StarkBank.Error;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Stark.Application.Invoice;
+using Microsoft.Extensions.Logging;
 
 namespace Stark.Controllers
 {
@@ -31,29 +32,41 @@ namespace Stark.Controllers
         {
             try
             {
+                var content = evt.GetRawText();
+
+                _logger.LogInformation("New Webhook received: {Event}", content);
+
                 var signature = Request.Headers["digital-signature"].ToString();
 
                 Event parsedEvent = Event.Parse(
-                    content: evt.GetRawText(),
                     user: _project,
+                    content: content,
                     signature: signature
                 );
 
                 if (parsedEvent.Subscription == "invoice" && parsedEvent.Log is Invoice.Log invoiceLog)
                 {
+                    _logger.LogInformation("Start process paid invoice {ID}", invoiceLog.Invoice.ID);
+
                     if (invoiceLog.Type == "paid")
                     {
                         var isSuccess = _invoiceService.Process(invoiceLog.Invoice);
                         if (isSuccess)
-                            return Ok();
+                            _logger.LogInformation("Invoice {ID} proccessed", invoiceLog.Invoice.ID);
                     }
                 }
 
                 return Ok();
             }
-            catch (InvalidSignatureError)
+            catch (InvalidSignatureError e)
             {
+                _logger.LogError(e, "Error processing event");
+
                 return new ForbidResult();
+            }
+            catch (Exception ex) {
+            {
+                _logger.LogError(ex, "Error processing event");
             }
         }
     }

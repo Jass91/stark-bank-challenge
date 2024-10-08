@@ -14,7 +14,7 @@ namespace Stark.Controllers
         private readonly Project _project;
         private readonly IInvoiceService _invoiceService;
         private readonly ILogger<InvoiceController> _logger;
-        
+
         public InvoiceController
         (
             Project project,
@@ -64,9 +64,11 @@ namespace Stark.Controllers
 
                 return new ForbidResult();
             }
-            catch (Exception ex) {
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing event");
+
+                return StatusCode(500, ex.Message);
             }
         }
     }

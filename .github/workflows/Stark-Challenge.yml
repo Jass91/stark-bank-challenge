@@ -28,7 +28,8 @@ env:
   WORKING_DIRECTORY: src/Host
 
   # permite escolher o valor com base na branch ou input
-  ASPNETCORE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || github.event.inputs.environment }}
+  ASPNETCORE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'Production' || (github.event.inputs.environment || 'Development') }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
